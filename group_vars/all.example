@@ -1,0 +1,2 @@
+docker_ce_version_to_install: 18.03.1
+kube_init_network_interface: enp0s8

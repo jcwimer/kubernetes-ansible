@@ -1,0 +1,60 @@
+---
+- name: Initialize kubernetes
+  command: kubeadm init --apiserver-advertise-address={{ join_addr }} --pod-network-cidr=10.244.0.0/16
+  register: out
+  failed_when: "out.rc != 0 and '/etc/kubernetes/manifests/kube-apiserver.yaml already exists' not in out.stderr"
+  changed_when: "out.rc == 0 and '/etc/kubernetes/manifests/kube-apiserver.yaml already exists' not in out.stderr"
+  become: true
+
+- name: Get join token
+  command: >
+    bash -c 'kubeadm token list | grep -v TOKEN | cut -d " " -f 1'
+  become: true
+  register: join_token_reg
+  changed_when: join_token_reg.rc == 0
+
+- name: Set join facts
+  set_fact:
+    join_token: "{{ join_token_reg }}"
+    init_ip: "{{ join_addr }}"
+
+- name: Copy admin file
+  shell: >
+    cp /etc/kubernetes/admin.conf {{ ansible_env.HOME }}/admin.conf && \
+    chown {{ ansible_user_id }}:{{ ansible_user_id }} {{ ansible_env.HOME }}/admin.conf
+  become: true
+
+- name: Set KUBECONFIG
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    regexp: '^export\ KUBECONFIG='
+    line: 'export KUBECONFIG={{ ansible_env.HOME }}/admin.conf'
+
+- name: Copy pod network install script
+  copy:
+    src: ../files/install-pod-network.sh
+    dest: "{{ ansible_env.HOME }}/install-pod-network.sh"
+
+- name: Copy networking yaml
+  template:
+    src: ../templates/kube-flannel.yml.j2
+    dest: "{{ ansible_env.HOME }}/kube-flannel.yml"
+
+- name: Install Pod Network
+  shell: >
+    bash {{ ansible_env.HOME }}/install-pod-network.sh
+    #kubectl apply -f {{ ansible_env.HOME }}/kube-flannel.yml
+  environment:
+    KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"
+
+- name: Install Kubernetes Dashboard
+  shell: kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+  environment:
+    KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"
+  ignore_errors: true
+
+- name: Install Traefik Ingress Controller
+  shell: >
+    kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-deployment.yaml
+  environment:
+    KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"

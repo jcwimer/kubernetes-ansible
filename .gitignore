@@ -1,0 +1,5 @@
+.vagrant/
+hosts
+group_vars/all
+ubuntu*.log
+playbooks/*.retry

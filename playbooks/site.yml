@@ -1,0 +1,55 @@
+---
+- name: Setup ansible dependencies
+  hosts: all
+  gather_facts: false
+  serial: 100%
+  tasks:
+    - include: ../roles/ansible-dependencies/tasks/main.yml
+
+- name: Install kubernetes
+  hosts: all
+  gather_facts: yes
+  serial: 100%
+  tasks:
+    - include: ../roles/install-kubernetes/tasks/main.yml
+
+- name: Bootstrap kubernetes
+  hosts: masters[0]
+  gather_facts: yes
+  serial: 100%
+  tasks:
+    - name: Set interface var name fact
+      set_fact:
+        kube_interface_var_name: "ansible_{{ kube_init_network_interface }}"
+
+    - name: Set swarm advertise ip address
+      set_fact: 
+        init_ip: "{{ hostvars[inventory_hostname][kube_interface_var_name]['ipv4']['address'] }}"
+        
+    - include: ../roles/initialize-kubernetes/tasks/main.yml
+      vars:
+        join_addr: "{{ init_ip }}"
+
+- name: Join worker nodes
+  hosts: workers
+  gather_facts: yes
+  serial: 100%
+#  vars:
+#    join-ip:
+#      "{{ hostvars[groups['masters'][0]]['join-ip']['stdout'] }}"
+#    init-ip:
+#      "{{ hostvars[groups['masters'][0]]['init-ip'] }}"
+  tasks:
+    - name: Set interface var name fact
+      set_fact:
+        kube_interface_var_name: "ansible_{{ kube_init_network_interface }}"
+
+    - name: Set swarm advertise ip address
+      set_fact: 
+        kube_interface_ip: "{{ hostvars[inventory_hostname][kube_interface_var_name]['ipv4']['address'] }}"
+
+    - include: ../roles/join-kubernetes-workers/tasks/main.yml
+      vars:
+        join_addr: "{{ hostvars[groups['masters'][0]]['init_ip'] }}"
+        join_token: "{{ hostvars[groups['masters'][0]]['join_token']['stdout'] }}"
+        kube_ip: "{{ kube_interface_ip }}"

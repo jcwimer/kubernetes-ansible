@@ -1,0 +1,14 @@
+---
+- name: Install package dependencies
+  raw: apt-get update -qq && apt-get install -y python-simplejson python-urllib3 python-openssl python-pyasn1 python-pip ca-certificates
+  become: true
+
+- name: Install pip dependencies
+  raw: pip install ndg-httpsclient
+  ignore_errors: true
+  become: true
+
+- name: Install pip dependencies again because it fails sometimes
+  raw: pip install ndg-httpsclient
+  ignore_errors: true
+  become: true

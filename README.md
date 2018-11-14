@@ -9,7 +9,7 @@ Deploy kubernetes with kubeadm with ansible. This currently only supports a sing
 3. Pipenv
 5. Nodes already deployed and running.
 6. SSH access to all nodes you're deploying to. 
-   * You will need to define and environment variable for your ssh key. `export PRIVATE_KEY="/location/of/key"`
+   * You will need to define an environment variable for your ssh key. `export PRIVATE_KEY="/location/of/key"`
    * OR you will need a ssh agent running.
 
 ### Steps
@@ -35,6 +35,6 @@ You can easily run a lab environment with Vagrant.
 3. Run `vagrant ssh master` then run `kubectl` commands like `kubectl get nodes` or `kubectl get pods --all-namespaces`
 4. Kubernetes nodes will be running on a host-only network that you can access from your machine with ips 192.168.254.2-5.
 
-To see what is going on, this has deployed Traefik as an ingress controller to the swarm. To get Traefik's port, run `kubectl get services -n kube-system` on the master. Then navigate to http://192.168.254.2:traefikport on your browser.
+To see what is going on, this has deployed Traefik as an ingress controller to kubernetes. To get Traefik's port, run `kubectl get services -n kube-system` on the master. Then navigate to http://192.168.254.2:traefikport on your browser.
 
 To destroy these machines, run `vagrant destroy -f`.

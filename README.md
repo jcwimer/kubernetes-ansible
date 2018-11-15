@@ -38,3 +38,13 @@ You can easily run a lab environment with Vagrant.
 To see what is going on, this has deployed Traefik as an ingress controller to kubernetes. To get Traefik's port, run `kubectl get services -n kube-system` on the master. Then navigate to http://192.168.254.2:traefikport on your browser.
 
 To destroy these machines, run `vagrant destroy -f`.
+
+# Development
+This project is tested with bash and Vagrant.
+
+### Requirements
+1. Virtualbox
+2. Vagrant
+
+### Running tests
+`bash tests/vagrant-tests.sh`

@@ -11,4 +11,4 @@ name = "pypi"
 
 [packages]
 
-ansible = "==2.4.1"
+ansible = "==2.7.1"

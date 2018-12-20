@@ -31,19 +31,14 @@
     line: 'export KUBECONFIG={{ ansible_env.HOME }}/admin.conf'
 
 - name: Copy pod network install script
-  copy:
-    src: ../files/install-pod-network.sh
+  template:
+    src: ../templates/install-pod-network.sh.j2
     dest: "{{ ansible_env.HOME }}/install-pod-network.sh"
 
-- name: Copy networking yaml
-  template:
-    src: ../templates/kube-flannel.yml.j2
-    dest: "{{ ansible_env.HOME }}/kube-flannel.yml"
 
 - name: Install Pod Network
   shell: >
     bash {{ ansible_env.HOME }}/install-pod-network.sh
-    #kubectl apply -f {{ ansible_env.HOME }}/kube-flannel.yml
   environment:
     KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"
 
@@ -53,8 +48,13 @@
     KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"
   ignore_errors: true
 
+- name: Copy Traefik yml
+  template:
+    src: ../templates/traefik-ds.yml.j2
+    dest: "{{ ansible_env.HOME }}/traefik-ds.yml"
+
 - name: Install Traefik Ingress Controller
   shell: >
-    kubectl apply -f https://raw.githubusercontent.com/containous/traefik/master/examples/k8s/traefik-deployment.yaml
+    kubectl apply -f {{ ansible_env.HOME }}/traefik-ds.yml
   environment:
     KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"

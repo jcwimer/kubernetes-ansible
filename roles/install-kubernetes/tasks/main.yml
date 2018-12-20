@@ -67,3 +67,4 @@
     sysctl_set: yes
     reload: yes
   become: true
+  when: kube_network == "flannel" or kube_network == "weavenet"

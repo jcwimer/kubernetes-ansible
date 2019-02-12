@@ -1,0 +1,1 @@
+kubectl get service | grep 'wordpress' | grep -v 'mysql' | awk {'print $5'} | sed 's/\/TCP//g' | cut -d ':' -f 2

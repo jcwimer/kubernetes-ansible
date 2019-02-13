@@ -48,7 +48,7 @@
     KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"
   ignore_errors: true
 
-- name: Copy Traefik yml
+- name: Copy Traefik ds yml
   template:
     src: ../templates/traefik-ds.yml.j2
     dest: "{{ ansible_env.HOME }}/traefik-ds.yml"
@@ -56,5 +56,16 @@
 - name: Install Traefik Ingress Controller
   shell: >
     kubectl apply -f {{ ansible_env.HOME }}/traefik-ds.yml
+  environment:
+    KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"
+
+- name: Copy Traefik rbac yaml
+  template:
+    src: ../templates/traefik-rbac.yaml.j2
+    dest: "{{ ansible_env.HOME }}/traefik-rbac.yaml"
+
+- name: Install Traefik RBAC
+  shell: >
+    kubectl apply -f {{ ansible_env.HOME }}/traefik-rbac.yaml
   environment:
     KUBECONFIG: "{{ ansible_env.HOME }}/admin.conf"

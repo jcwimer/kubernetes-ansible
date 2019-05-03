@@ -1,7 +1,7 @@
 apiVersion: ceph.rook.io/v1beta1
 kind: Pool
 metadata:
-  name: replicapool
+  name: kubernetespool
   namespace: rook-ceph
 spec:
   replicated:
@@ -10,10 +10,10 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-   name: rook-ceph-block
+   name: standard
 provisioner: ceph.rook.io/block
 parameters:
-  pool: replicapool
+  pool: kubernetespool
   # The value of "clusterNamespace" MUST be the same as the one in which your rook cluster exist
   clusterNamespace: rook-ceph
   # Specify the filesystem type of the volume. If not specified, it will use `ext4`.

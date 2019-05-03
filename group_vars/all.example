@@ -1,8 +1,19 @@
 docker_ce_version_to_install: 18.03.1
-kube_init_network_interface: enp0s8
 
-# Kubernetes pod network. Choices are:
-# flannel
-# weavenet
-# calico
-kube_network: weavenet
+# rke
+# The directory for copying RKE config files to deploy the cluster. This is a local directory.
+rke_directory: /root/rke
+# The directory for copying RKE config files onto the kubernetes nodes. This folder will be created if it does not exist.
+rke_node_directory: /rke
+rke_version: 0.2.1
+rke_cluster_name: rke-k8s
+# The ssh key location to ssh into the kubernetes nodes. This is overrode by supporting-scripts/run-setup.sh
+rke_ssh_key_location: /root/id_rsa
+
+# Internal domain for kubernetes api to respond on
+domain: test.local
+# Standard ssh user for kubernetes nodes.
+standard_user: user
+
+# Optional - leave a localhost if you do not define. This is a vip address for kubernetes api to respond on if fronted by haproxy.
+vip_address: localhost

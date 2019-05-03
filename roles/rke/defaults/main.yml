@@ -1,0 +1,8 @@
+# rke
+rke_directory: /root/rke
+rke_node_directory: /rke
+rke_version: 0.2.1
+rke_cluster_name: rke-k8s
+rke_ssh_key_location: /root/id_home
+vip_address: localhost
+domain: test.local 

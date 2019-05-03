@@ -1,0 +1,26 @@
+---
+- name: Setup ansible dependencies
+  hosts: all
+  gather_facts: false
+  serial: 100%
+  tasks:
+    - include: ../roles/ansible-dependencies/tasks/main.yml
+
+- name: Pre rke
+  hosts: masters workers
+  gather_facts: yes
+  serial: 100%
+  tasks:
+    - include: ../roles/rke/tasks/pre-rke.yml
+
+- name: Set up Kubernetes
+  hosts: localhost
+  tasks:
+   - include: ../roles/rke/tasks/main.yml
+
+- name: Post rke
+  hosts: masters workers
+  gather_facts: yes
+  serial: 100%
+  tasks:
+    - include: ../roles/rke/tasks/post-rke.yml

@@ -1,0 +1,34 @@
+---
+
+ssh_key_path: {{ rke_ssh_key_location }}
+
+cluster_name: rke_cluster_name
+ignore_docker_version: true
+kubernetes_version: v1.13.4-rancher1-2
+system_images:
+    kubernetes: rancher/hyperkube:v1.13.4-rancher1
+
+nodes:
+  {% for node in groups['masters'] %}
+
+  - address: {{ hostvars[node]['ansible_host'] }}
+    name: {{node}}
+    user: {{standard_user}}
+    role:
+    - controlplane
+    - etcd
+  {% endfor %}
+  {% for node in groups['workers'] %}
+
+  - address: {{ hostvars[node]['ansible_host'] }}
+    name: {{node}}
+    user: {{standard_user}}
+    role:
+    - worker
+  {% endfor %}
+
+authentication:
+    strategy: x509
+    sans:
+      - "{{ vip_address }}"
+      - "kube.{{ domain }}"

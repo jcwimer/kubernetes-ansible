@@ -8,4 +8,4 @@ cd ${project_dir}
 
 # Run
 pipenv install
-pipenv run ansible-playbook -u ${DEPLOY_USER} -i hosts --ssh-common-args="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" --private-key=${private_key} playbooks/site.yml
+pipenv run ansible-playbook -u ${DEPLOY_USER} -i hosts --ssh-common-args="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" --private-key=${private_key} --extra-vars "rke_ssh_key_location=${private_key}" playbooks/rke.yml

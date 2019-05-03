@@ -1,5 +1,5 @@
 # kubernetes-ansible
-Deploy kubernetes with kubeadm with ansible. This currently only supports a single master kubernetes cluster. This currently only deploys weave net for pod networking.
+Deploy kubernetes with rke with ansible.
 
 # Deploy
 
@@ -7,16 +7,15 @@ Deploy kubernetes with kubeadm with ansible. This currently only supports a sing
 1. Python
 2. Pip
 3. Pipenv
-5. Nodes already deployed and running.
+5. Nodes already deployed and running with ubuntu.
 6. SSH access to all nodes you're deploying to. 
    * You will need to define an environment variable for your ssh key. `export PRIVATE_KEY="/location/of/key"`
-   * OR you will need a ssh agent running.
 
 ### Steps
 1. Copy hosts.example to hosts
-    * Put ip addresses under the sections.
-    * Master is a single node used for the kubernetes api. See kubernetes documentation for more info on masters: https://kubernetes.io/docs/concepts/overview/components/
-    * Workers are nodes used for running containers. You can have as many as necessary.
+    * Name the node and under ansible_host put the ip of the node.
+    * Master nodes run the control plane. See kubernetes documentation for more info on masters: https://kubernetes.io/docs/concepts/overview/components/
+    * Workers are nodes used for running containers.
  2. Copy group_vars/all.example to group_vars/all
     * Fill out with the settings that pertain to your configuration.
  3. Run `bash supporting-scripts/run-setup.sh`

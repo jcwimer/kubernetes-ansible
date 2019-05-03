@@ -40,19 +40,12 @@ function run-tests {
     echo Giving containers time to start up.
     sleep 90s
 
-    local kubectl_config="export KUBECONFIG=/home/vagrant/admin.conf"
+    local kubectl_config="export KUBECONFIG=/rke/kube_config_rke-k8s.yaml"
     local curl_params="--silent --fail --max-time 10"
 
-    number_of_ready_nodes=$(run-ssh-command master "${kubectl_config}; kubectl get nodes | grep -v STATUS | grep Ready | wc -l")
+    number_of_ready_nodes=$(run-ssh-command master "sudo bash -c '${kubectl_config}; kubectl get nodes | grep -v STATUS | grep Ready | wc -l'")
     testbash "There should be 4 nodes in Ready state." \
       "test ${number_of_ready_nodes} -eq 4"
-
-    traefik_port=$(run-ssh-command master "${kubectl_config}; kubectl get service -n kube-system | grep traefik | awk {'print $5'} | cut -d , -f 2 | cut -d : -f 2 | cut -d / -f 1")
-    testbash "Traefik should be reachable from worker1 node." \
-      "run-ssh-command client 'curl ${curl_params} http://192.168.254.3:${traefik_port}/dashboard/ > /dev/null'"
-    testbash "Traefik should be reachable from worker2 node." \
-      "run-ssh-command client 'curl ${curl_params} http://192.168.254.3:${traefik_port}/dashboard/ > /dev/null'"
-
   trap - ERR
 }
 
